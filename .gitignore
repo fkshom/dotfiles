@@ -1,0 +1,4 @@
+/bundle/*
+!/bunde/config
+/vim/*
+!/vim/autoload/*

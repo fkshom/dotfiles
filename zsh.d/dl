@@ -1,0 +1,53 @@
+function dl () {
+
+    trashdir="$HOME/.Trash"
+
+    # 引数のチェック
+    if [ $# -eq 0 ]
+    then
+	echo "Usage: dl file1 file2 ..."
+	return 1
+    fi
+    
+    # 移動先のチェック
+    [ -d "$trashdir" ] || mkdir "$trashdir"
+    
+    # 移動先にディレクトリを作る
+    dirname=`date "+%F_%H%M%S"`
+    dirpath="${trashdir}/${dirname}"
+    if [ -e "$dirpath" ]
+    then
+	COUNT=0
+	while [ -e "$dirpath" ]
+	do
+	    COUNT=$(($COUNT+1))
+	    dirpath_tmp="${dirpath}.${COUNT}"
+	done
+	dirpath=$dirpath_tmp
+    fi
+
+ 
+    mkdir -p "${dirpath}"
+
+    for file in $*
+    do
+	if [ -e $file ]
+	then
+	    BASENAME=`basename $file`
+	    FNAME=$BASENAME
+	    COUNT=0
+	    while [ -e ${dirpath}/$FNAME ]
+	    do
+		COUNT=$(($COUNT+1))
+		FNAME="${BASENAME}.${COUNT}"
+	    done
+	    mv $file ${dirpath}/$FNAME
+	else
+	    echo "No such file or directory: $file"
+	fi
+    done
+    
+    unset file BASENAME FNAME COUNT
+    return 0
+}
+

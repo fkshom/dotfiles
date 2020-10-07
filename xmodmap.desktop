@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=xmodmap
+GenericName=Keymapper
+Exec=xmodmap /home/user/.Xmodmap
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true

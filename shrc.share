@@ -1,0 +1,169 @@
+## alias
+## ==================================
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias df='df -h'
+alias du='du -h'
+alias more='less -R'
+alias grep='grep -i --color=auto'
+alias fgrep='fgrep -i --color=auto'
+alias egrep='egrep -i --color=auto'
+alias ls='ls -hF --color=auto --show-control-chars --group-directories-first'
+alias ll='ls -l'
+alias la='ls -A'     # all but . and ..
+alias lla='ll -A'
+alias dir='ls --color=auto --format=vertical'
+alias vdir='ls --color=auto --format=long'
+alias sl=''
+alias echo='echo -e'
+alias sc='systemctl'
+alias scr='systemctl restart'
+alias scs='systemctl status'
+alias po='poetry'
+alias prp='poetry run python3'
+alias ..='cd ..'
+alias to64='cat - | bzip2 | base64 -w 180'
+alias from64='cat - | base64 -d | bunzip2'
+
+if type xsel >/dev/null 2>&1; then
+  alias pbcopy='xsel --clipboard --input'
+  alias pbpaste='xsel --clipboard --output'
+fi
+
+if type colordiff >/dev/null 2>&1; then
+  alias cdiff='colordiff'
+fi
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+
+alias rspec='rspec -cfd'
+alias be='bundle exec'
+
+if [ -e "/Applications/MacVim.app/Contents/MacOS/Vim" ]; then
+  alias vi='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+  alias vim='vi'
+  alias view='vim -R'
+  alias gvim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim -g "$@"'
+fi
+
+if [ -e "/Applications/Emacs.app/Contents/MacOS/Emacs" ]; then
+  alias emacs='open -a Emacs "$@"'
+fi
+if [ -e "/cygdrive/d/ProgramFiles/emacs-23.3a/bin/emacs" ]; then
+  alias emacs='/cygdrive/d/ProgramFiles/emacs-23.3a/bin/emacsclientw "$@"'
+fi
+
+reload(){
+  [[ "$SHELL" =~ /bash/ ]] && source ~/.bashrc
+  [[ "$SHELL" =~ /zsh/ ]] && source ~/.zshrc
+}
+
+if type poetry >/dev/null 2>&1; then
+  alias prp='poetry run python'
+fi
+
+alias g='cd $(ghq root)/$(ghq list | peco)'
+if [ -e `which peco` ]; then
+  :
+fi
+
+mkcd(){
+  mkdir -p $1
+  cd $1
+} 
+
+## Local Program Environment
+## ====================
+
+if [ -s $HOME/.rbenv/bin/rbenv -o -d $HOME/.rbenv ]; then
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+  [[ $SHELL == *bash** ]] && [[ -s ~/.rbenv/completions/rbenv.bash ]] && \
+    source ~/.rbenv/completions/rbenv.bash 2> /dev/null
+  [[ $SHELL == *zsh** ]] && [[ -s ~/.rbenv/completions/rbenv.zsh ]] && \
+    source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
+fi
+
+if [ -d $HOME/.pyenv ]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+fi
+
+if [ -d $HOME/.poetry/bin ]; then
+  export PATH="$HOME/.poetry/bin:$PATH"
+fi
+
+if [ -d $HOME/.perl-extlib ]; then
+  export PERL_CPANM_OPT="--local-lib=$HOME/.perl-extlib"
+  export PERL5LIB="$HOME/.perl-extlib/lib/perl5:$PERL5LIB"
+fi
+
+## environment variable
+## ====================
+
+export EDITOR=vim
+export VISUAL=vim
+export PAGER=less
+
+[[ $TERM = "eterm-color" ]] && TERM=xterm-color
+[[ $TERM = "xterm" ]] && TERM=xterm-256color
+
+[[ -d ~/.local/bin ]] && export PATH=~/.local/bin:$PATH
+
+# ignorespace+ignoredups　空白文字で始まる行を保存しない、以前の履歴と一致する行を保存しない
+HISTCONTROL=ignoreboth
+
+# HISTFILE=  # shell依存のため設定しない
+
+# ヒストリファイルの最大値 -1:無限
+HISTFILESIZE=-1
+
+# ヒストリファイルの保存するコマンド数
+HISTSIZE=-1
+
+# historyコマンドの出力フォーマット
+HISTTIMEFORMAT='%F %T '
+
+if [[ $SHELL == *bash* ]]; then
+  # 複数行コマンドを単一エントリとして保存する
+  shopt -s cmdhist
+  
+  # セミコロン区切り記号ではなく改行による複数行コマンドを履歴に保存する
+  shopt -s lithist
+  
+  # ヒストリファイルに追記する
+  shopt -s histappend
+  
+  # 履歴置換を再編集する機会を得る
+  shopt -s histreedit
+  
+  # 履歴置換の結果を編集バッファにロードし編集を可能とする
+  shopt -s histverify
+fi
+
+if [[ $SHELL == *zsh* ]]; then
+  :  
+fi
+
+## other
+## ====================
+
+# ビープ音を消す
+if [ -x "`which xset`" ] && [ -n "$DISPLAY" ]; then xset b off; fi
+
+# C-sでSTOPするのをやめる
+if [[ -t 0 ]]; then
+  stty stop undef
+  stty start undef
+fi
+
+
+
+
+

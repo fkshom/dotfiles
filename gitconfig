@@ -1,0 +1,92 @@
+[include]
+	path = .gitconfig.local
+    path = .gitconfig.user
+[credential]
+        helper = cache
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+	grep = auto
+	ui = auto
+[core]
+	excludesfile = ~/.gitignore
+	attributesfile = ~/.gitattributes
+	editor = vim
+	quotepath = false
+[push]
+	default = tracking 
+[http]
+	sslVerify = false
+[merge]
+	tool = WinMerge
+#	tool = kdiff3
+[mergetool "WinMerge"]
+	path = WinMergeU.exe
+	cmd = \"WinMergeU.exe\" //r //e //u //wl //wr \"$LOCAL\" \"$BASE\" \"$REMOTE\" //o \"$MERGED\"
+#	cmd = \"WinMergeU.exe\" /e /ub /fr /ar /wl /wm /dl %bname /dm %tname /dr %yname  %base %theirs %mine /o %merged
+	trustExitCode = true
+[mergetool "kdiff3"]
+	path = kdiff3.exe
+	trustExitCode = true
+[diff]
+	tool = WinMerge
+	guitool = WinMerge
+	guitool = kdiff3
+	compactionHeuristic = true
+[difftool "WinMerge"]
+	path = WinMergeU.exe
+	cmd = \"WinMergeU.exe\" -e -ub -dl \"Base\" -dr \"Mine\" \"$LOCAL\" \"$REMOTE\" 
+[difftool "kdiff3"]
+	path = kdiff3.exe
+[ghq]
+        root = ~/.ghq
+[alias]
+	wdiff = diff --word-diff
+	jwdiff = "!f() { git diff $@ | jwdiff -d | colordiff; }; f"
+	st = status
+	sh = show
+	so = remote show origin
+	ft = fetch
+	up = pull --rebase       # pull rebase
+	rbm = rebase master      # masterへのrebaseはよく使うのでalias
+	ad = add
+	ci = commit -a           # modifiedなファイルを全てstageへ
+	cam = commit -a --amend  # 直前のcommitを修正
+	co = checkout
+        wt = worktree
+	# branch関連
+	br = branch
+	ba = branch -a           # originも含めた全てのbranchを表示
+	bm = branch --merged     # merge済みのbranchを表示
+	bn = branch --no-merged  # mergeしてないbranchを表示
+	# log関連
+	wc = whatchanged         # logに変更されたファイルも一緒に出す
+	ls = log --stat          # logに変更されたファイルも一緒に出す
+	lp = log -p              # diffも一緒に出す
+	la = log --pretty=\"format:%ad %h (%an): %s\" --date=short  # ざっくりログ出す
+	lr = log origin          # originのlog
+	oneline = log --pretty=oneline
+	ranking = shortlog -s -n --no-merges
+	# logをtree表示
+	log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+	log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
+	# diff関連
+	dm = diff master           # masterとのdiff
+	dw = diff --color-words    # 単語単位でいろつけてdiff
+	dc = diff --cached         # addされているものとのdiff
+	ds = diff --staged         # 同上(1.6.1移行)
+	d1 = diff HEAD~            # HEADから1つ前とdiff
+	d2 = diff HEAD~~           # HEADから2つ前とdiff
+	d3 = diff HEAD~~~          # HEADから3つ前とdiff
+	d4 = diff HEAD~~~~         # HEADから4つ前とdiff
+	d5 = diff HEAD~~~~~        # HEADから5つ前とdiff
+	d10 = diff HEAD~~~~~~~~~~  # HEADから10前とdiff
+	# mergeの際にconflictが起きたファイルを編集
+	edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+	# mergeの際にconflictが起きたファイルをadd
+	add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+	# grep関連
+	gr = grep
+	gn = grep -n

@@ -1,0 +1,44 @@
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- link:
+    ~/.vimrc:
+    ~/.vim:
+    ~/.tmux.conf:
+    ~/.tmux:
+    ~/.zplug:
+    ~/.zshrc:
+    ~/.zsh.d:
+    ~/.Xmodmap:
+    ~/.config/autostart/xmodmap.desktop:
+    ~/.config/albert/albert.conf:
+      path: config/albert/albert.conf
+    ~/.config/systemd/user/ssh-agent.service:
+      path: config/systemd/user/ssh-agent.service
+    ~/.gemrc:
+    ~/.irbrc:
+    ~/.bundle:
+    ~/.globalrc:
+    ~/.gitconfig:
+    ~/.gitignore:
+    ~/.shrc.share:
+    ~/.bashrc:
+      force: true
+    ~/.sh.d:
+
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
+  - command: bash bin/configure
+    stdin: false
+    stdout: true
+    quiet: false
+    description: Configuring system
+
+#- vscode:
+#    shan.code-settings-sync:
+#        status: install
+#        insiders: false
+

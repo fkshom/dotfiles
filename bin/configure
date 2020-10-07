@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+
+get_os_type() {
+  case "$(uname)" in
+    "Darwin" ) echo "Darwn"   ;;
+      Linux* ) echo "Linux"   ;;
+           * ) echo "Unknown" ;;
+  esac
+}
+
+get_os_bit() {
+  echo $(uname -m);
+}
+
+get_os_distribution() {
+  if [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
+    if [ -e /etc/lsb-release ]; then
+      echo "ubuntu"
+    else
+      echo "debian"
+    fi
+  elif [ -e /etc/centos-release ]; then
+    echo "centos"
+  elif [ -e /etc/fedora-release ]; then
+    echo "fedora"
+  elif [ -e /etc/redhat-release ]; then
+    if [ -e /etc/oracle-release ]; then
+      echo "oracle"
+    else
+      echo "redhat"
+    fi
+  else
+    echo "unkown"
+  fi
+}
+
+configure_ubuntu() {
+  echo "Running configure_ubuntu"
+
+  if type gsettings > /dev/null 2>&1; then
+    # gsettings list-recursively
+    # アニメーションをOFFにする
+    echo "disalbe animation"
+    gsettings set org.gnome.desktop.interface enable-animations false
+  
+    # disable screen lock
+    echo "disalbe screen lock"
+    gsettings set org.gnome.desktop.screensaver lock-enabled false
+    gsettings set org.gnome.desktop.session idle-delay 0
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+  
+    # dock size
+    echo "set dock size"
+    gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 26
+
+    # enable switch window
+    gsettings set org.gnome.desktop.wm.keybindings switch-applications "['']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-applications-backward "['']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
+  
+  fi
+
+  if [ -f /usr/share/ibus/component/mozc.xml ]; then
+    # MozcのキーボードレイアウトをJPにする
+    echo "set mozc keyboard layout to JP"
+    sudo sed -i.bak -e "s%<layout>default</layout>%<layout>jp</layout>%" /usr/share/ibus/component/mozc.xml
+  fi
+
+  # 自動アップデートをOFFにする
+  echo "disable auto update"
+  if [ -f /etc/apt/apt.conf.d/20auto-upgrades ]; then
+    sudo sed -i -e '/APT::Periodic::Update-Package-Lists/s%1%0%g' /etc/apt/apt.conf.d/20auto-upgrades
+    sudo sed -i -e '/APT::Periodic::Unattended-Upgrade/s%1%0%g' /etc/apt/apt.conf.d/20auto-upgrades
+  fi
+  sudo systemctl stop apt-daily
+  sudo systemctl stop apt-daily-upgrade
+  sudo systemctl disable apt-daily
+  sudo systemctl disable apt-daily-upgrade
+
+  # disable Automatic Error Reporting Service
+  echo "disable autmatic error repoting"
+  if systemctl status Apport >/dev/null 2>&1; then
+    sudo systemctl stop Apport
+    sudo systemctl disable Apport
+  fi
+  if [ -f /etc/default/apport ]; then
+    sudo sed -i -e '/enabled=/s/1/0/g' /etc/default/apport 
+  fi
+
+  # disable connectivity check
+  if [ -f /var/lib/NetworkManager/NetworkManager-intern.conf ]; then
+    echo "disable connectivity check"
+    sudo sed -i -e '/.set.enabled=/s/true/false/g' /var/lib/NetworkManager/NetworkManager-intern.conf
+  fi
+  #exit 0
+}
+
+configure_unknown() {
+  exit 0
+}
+
+configure_gitconfig() {
+  if [ ! -f ~/.gitconfig.user ]; then
+    exec < /dev/tty
+    local user
+    echo "Input git user:"
+    read user
+    local email
+    echo "Input git email:"
+    read email
+    cat <<EOF > ~/.gitconfig.user
+[user]
+name = $user
+email = $email
+EOF
+  fi
+}
+
+configure_`get_os_distribution`
+configure_gitconfig
+
+exit 0
+

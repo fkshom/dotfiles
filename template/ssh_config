@@ -1,0 +1,9 @@
+Host host
+  HostName 127.0.0.1
+  User user
+  IdentityFile ~/.ssh/id_rsa
+  IdentityAgent /run/user/1000/ssh-agent.socket
+  IdentitiesOnly yes
+  ForwardAgent no
+  AddKeysToAgent yes
+
