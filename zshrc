@@ -13,6 +13,9 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 # gitのブランチ情報をプロンプトに表示
 zplug "zsh-git-prompt/zsh-git-prompt", use:zshrc.sh
 
+# コマンドラインの補完
+zplug "zsh-users/zsh-autosuggestions"
+
 if ! zplug check --verbose; then
     printf "Install? [y/N]: "
     if read -q; then
@@ -20,12 +23,25 @@ if ! zplug check --verbose; then
     fi
 fi
 
-zplug load --verbose
+#zplug load --verbose
+zplug load
 
 # load alias, environment variable, and so on
 # ==========================================
 
-source shrc.share
+source ~/.shrc.share
+
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tac | uniq | awk '!a[$0]++' | peco --query "$READLINE_LINE"`
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+
+if type peco >/dev/null 2>&1; then
+  zle -N peco-history-selection
+  bindkey '^R' peco-history-selection
+fi
+
 
 # 環境依存設定
 # ================================================
@@ -132,8 +148,8 @@ bindkey "[B" history-beginning-search-forward-end
 #bindkey "^N" history-beginning-search-forward-end
 
 # インクリメンタルサーチの設定
-bindkey "^R" history-incremental-search-backward
-bindkey "^S" history-incremental-search-forward
+#bindkey "^R" history-incremental-search-backward
+#bindkey "^S" history-incremental-search-forward
 
 #bindkey ${$(echotc bt 2>&-):-"[Z"} reverse-menu-complete
 #bindkey "#setopt menu_complete
