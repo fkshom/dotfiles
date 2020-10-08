@@ -84,7 +84,7 @@ fi
 peco_search_history() {
     local l=$(HISTTIMEFORMAT= history | \
                   sed -e 's/^[0-9\| ]\+//' -e 's/ \+$//' | \
-                  sort | uniq | \
+                  tac | uniq | \
                   peco --query "$READLINE_LINE")
     READLINE_LINE="$l"
     READLINE_POINT=${#l}
