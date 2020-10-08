@@ -1,30 +1,21 @@
 
-# load zplug
+# load zinit
 # ==============================
 
-source ~/.zplug/init.zsh
+source ~/.zinit/zinit.zsh
 
-zplug "zsh-users/zsh-history-substring-search"
-zplug "b4b4r07/enhancd", use:init.sh
-# 標準的なコマンドの補完
-zplug "zsh-users/zsh-completions"
-# コマンドのシンタックスハイライト
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-# gitのブランチ情報をプロンプトに表示
-zplug "zsh-git-prompt/zsh-git-prompt", use:zshrc.sh
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 
-# コマンドラインの補完
-zplug "zsh-users/zsh-autosuggestions"
+zinit light zsh-users/zsh-autosuggestions
+zinit light zdharma/fast-syntax-highlighting
+zinit light zsh-git-prompt/zsh-git-prompt
+zinit load zdharma/history-search-multi-word
 
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
+zinit ice from"gh-r" as"program"
+zinit load junegunn/fzf-bin
 
-#zplug load --verbose
-zplug load
+zinit wait lucid atload"zicompinit; zicdreplay" blockf for zsh-users/zsh-completions
 
 # load alias, environment variable, and so on
 # ==========================================

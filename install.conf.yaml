@@ -9,6 +9,7 @@
     ~/.tmux.conf:
     ~/.tmux:
     ~/.zplug:
+    ~/.zinit:
     ~/.zshrc:
     ~/.zsh.d:
     ~/.Xmodmap:
