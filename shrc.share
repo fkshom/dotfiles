@@ -26,6 +26,7 @@ alias prp='poetry run python3'
 alias ..='cd ..'
 alias to64='cat - | bzip2 | base64 -w 180'
 alias from64='cat - | base64 -d | bunzip2'
+alias tigall='tig --all'
 
 if type xsel >/dev/null 2>&1; then
   alias pbcopy='xsel --clipboard --input'
