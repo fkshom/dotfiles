@@ -94,6 +94,10 @@ configure_ubuntu() {
     echo "disable connectivity check"
     sudo sed -i -e '/.set.enabled=/s/true/false/g' /var/lib/NetworkManager/NetworkManager-intern.conf
   fi
+
+  # hide motd
+  touch $HOME/.hushlogin
+
   #exit 0
 }
 
