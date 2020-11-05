@@ -84,6 +84,21 @@ for bcfile in ~/.local/share/bash-completions/* ; do
   [ -f "$bcfile" ] && . $bcfile
 done
 
+# 複数行コマンドを単一エントリとして保存する
+shopt -s cmdhist
+
+# セミコロン区切り記号ではなく改行による複数行コマンドを履歴に保存する
+shopt -s lithist
+
+# ヒストリファイルに追記する
+shopt -s histappend
+
+# 履歴置換を再編集する機会を得る
+shopt -s histreedit
+
+# 履歴置換の結果を編集バッファにロードし編集を可能とする
+shopt -s histverify
+
 
 peco_search_history() {
     local l=$(HISTTIMEFORMAT= history | \
