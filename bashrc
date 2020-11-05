@@ -113,7 +113,7 @@ if type peco >/dev/null 2>&1; then
 fi
 
 function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ [\1]/'
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
 }
 function promps {
     local  BLUE="\[\e[1;34m\]"
@@ -127,7 +127,7 @@ function promps {
         *)      TITLEBAR="";;
     esac
     local BASE="\u@\h"
-    PS1="${TITLEBAR}${GREEN}${BASE}${WHITE}:${BLUE}\W${GREEN}\$(parse_git_branch)${BLUE}\n\$${WHITE} "
+    PS1="${TITLEBAR}${GREEN}${BASE}${WHITE}(${BLUE}\W${WHITE})${GREEN}\$(parse_git_branch)${BLUE}\n\$${WHITE} "
 }
 promps
 
