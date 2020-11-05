@@ -80,6 +80,10 @@ if ! shopt -oq posix; then
   fi
 fi
 
+for bcfile in ~/.local/share/bash-completions/* ; do
+  [ -f "$bcfile" ] && . $bcfile
+done
+
 
 peco_search_history() {
     local l=$(HISTTIMEFORMAT= history | \
@@ -92,6 +96,25 @@ peco_search_history() {
 if type peco >/dev/null 2>&1; then
   bind -x '"\C-r": peco_search_history'
 fi
+
+function parse_git_branch {
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ [\1]/'
+}
+function promps {
+    local  BLUE="\[\e[1;34m\]"
+    local  RED="\[\e[1;31m\]"
+    local  GREEN="\[\e[1;32m\]"
+    local  WHITE="\[\e[00m\]"
+    local  GRAY="\[\e[1;37m\]"
+
+    case $TERM in
+        xterm*) TITLEBAR='\[\e]0;\W\007\]';;
+        *)      TITLEBAR="";;
+    esac
+    local BASE="\u@\h"
+    PS1="${TITLEBAR}${GREEN}${BASE}${WHITE}:${BLUE}\W${GREEN}\$(parse_git_branch)${BLUE}\$${WHITE} "
+}
+promps
 
 [ -f ~/.shrc.share ] && source ~/.shrc.share
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
