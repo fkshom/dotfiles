@@ -14,6 +14,7 @@ set shiftwidth=2
 set smartindent "オートインデント
 set autoindent
 set number " 行番号を表示する
+set scrolloff=5  " 常に数行表示する
 
 " 対応括弧に<と>のペアを追加
 set matchpairs& matchpairs+=<:>
@@ -157,6 +158,9 @@ nnoremap Q gq
 " C-<BS>で削除できるようにする
 inoremap <C-BS> <C-W>
 
+
+" Plugin support
+" ================================================
 call plug#begin()
 Plug 'lambdalisue/fern.vim'
 Plug 'tyru/caw.vim'
