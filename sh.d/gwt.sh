@@ -99,9 +99,6 @@ gwt-cd(){
       READLINE_POINT=${#l}
   fi
 }
-bind -r "\C-]"
-bind -x '"\C-]p":gwt-cd'
-
 
 gwt-ghq(){
   set-filter
@@ -114,6 +111,5 @@ gwt-ghq(){
     READLINE_POINT=${#l}
   fi
 }
-bind -x '"\C-]g":gwt-ghq'
 
 

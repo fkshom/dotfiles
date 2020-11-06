@@ -131,6 +131,13 @@ function promps {
 }
 promps
 
+if [ -f ~/.sh.d/gwt.sh ]; then
+    source ~/.sh.d/gwt.sh
+    bind -r "\C-]"
+    bind -x '"\C-]p":gwt-cd'
+    bind -x '"\C-]g":gwt-ghq'
+fi
+
 [ -f ~/.shrc.share ] && source ~/.shrc.share
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
 

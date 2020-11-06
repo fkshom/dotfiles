@@ -276,6 +276,13 @@ WORDCHARS='*?_-.[]~=&;!#$%^(){}<>/'
 # http://www.crimson-snow.net/tips/unix/zsh.html
 # http://cvs.sourceforge.jp/cgi-bin/viewcvs.cgi/linuxtips/memo/zsh.txt?rev=1.1.1.1
 
+if [ -e ~/.sh.d/gwt.sh ]; then
+    source ~/.sh.d/gwt.sh
+    zle -N gwt-cd
+    bindkey '^]p' gwt-cd
+    zle -N gwt-ghq
+    bindkey '^]g' gwt-ghq
+fi
 
 [[ -s $HOME/.zshrc.local ]] && source $HOME/.zshrc.local
 
@@ -294,9 +301,5 @@ ZSH_THEME_GIT_PROMPT_BEHIND="%{$fg[red]%}%{-%G%}"
 ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg[green]%}%{+%G%}"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[green]%}%{✔%G%}"
 PROMPT="%B%{[1;31m%}%n@%m%{[m%}(%{[1;34m%}%c%{[m%})"'$(git_super_status)'$'\n'"$sprompt%B%{[1;31m%}%#%{[m%}%b "
-
-# zsh-users/zsh-history-substring-searchの設定
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
 
 
