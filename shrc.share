@@ -60,8 +60,8 @@ if [ -e "/cygdrive/d/ProgramFiles/emacs-23.3a/bin/emacs" ]; then
 fi
 
 reload(){
-  [[ "$SHELL" =~ /bash/ ]] && source ~/.bashrc
-  [[ "$SHELL" =~ /zsh/ ]] && source ~/.zshrc
+  [ "$SHELL" = "bash" ] && source ~/.bashrc
+  [ "$SHELL" = "zsh" ] && source ~/.zshrc
 }
 
 if type poetry >/dev/null 2>&1; then
@@ -69,7 +69,7 @@ if type poetry >/dev/null 2>&1; then
 fi
 
 alias g='cd $(ghq root)/$(ghq list | peco)'
-if [ -e `which peco` ]; then
+if type peco >/dev/null 2>&1; then
   :
 fi
 
@@ -84,9 +84,9 @@ mkcd(){
 if [ -s $HOME/.rbenv/bin/rbenv -o -d $HOME/.rbenv ]; then
   export PATH="$HOME/.rbenv/bin:$PATH"
   eval "$(rbenv init -)"
-  [[ $SHELL == *bash** ]] && [[ -s ~/.rbenv/completions/rbenv.bash ]] && \
+  [ $SHELL == "bash" ] && [ -s ~/.rbenv/completions/rbenv.bash ] && \
     source ~/.rbenv/completions/rbenv.bash 2> /dev/null
-  [[ $SHELL == *zsh** ]] && [[ -s ~/.rbenv/completions/rbenv.zsh ]] && \
+  [ $SHELL == "zsh" ] && [ -s ~/.rbenv/completions/rbenv.zsh ] && \
     source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
 fi
 
@@ -112,10 +112,10 @@ export EDITOR=vim
 export VISUAL=vim
 export PAGER=less
 
-[[ $TERM = "eterm-color" ]] && TERM=xterm-color
-[[ $TERM = "xterm" ]] && TERM=xterm-256color
+[ $TERM = "eterm-color" ] && TERM=xterm-color
+[ $TERM = "xterm" ] && TERM=xterm-256color
 
-[[ -d ~/.local/bin ]] && export PATH=~/.local/bin:$PATH
+[ -d ~/.local/bin ] && export PATH=~/.local/bin:$PATH
 
 # ignorespace+ignoredups　空白文字で始まる行を保存しない、以前の履歴と一致する行を保存しない
 HISTCONTROL=ignoreboth
