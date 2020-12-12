@@ -21,6 +21,8 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for zsh-users/zsh-complet
 # ==========================================
 
 source ~/.shrc.share
+alias fig='docker-compose'
+compdef fig=docker-compose
 
 function peco-history-selection() {
     BUFFER=`history -n 1 | tac | uniq | awk '!a[$0]++' | peco --query "$READLINE_LINE"`
