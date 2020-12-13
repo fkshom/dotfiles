@@ -1,3 +1,41 @@
+## Path
+## ====================
+
+[ -d ~/.local/bin ] && export PATH=~/.local/bin:$PATH
+
+## Local Program Environment
+## ====================
+
+if [ -s $HOME/.rbenv/bin/rbenv -o -d $HOME/.rbenv ]; then
+  echo "load rbenv"
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+  [[ `readlink /proc/$$/exe` == *bash ]] && [ -s ~/.rbenv/completions/rbenv.bash ] && \
+    echo "load rbenv.bash" && \
+    source ~/.rbenv/completions/rbenv.bash 2> /dev/null
+# for zsh completion is broken
+#  [[ `readlink /proc/$$/exe` == *zsh ]] && [ -s ~/.rbenv/completions/rbenv.zsh ] && \
+#    echo "load rbenv.zsh" && \
+#    source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
+fi
+
+if [ -d $HOME/.pyenv ]; then
+  echo "load pyenv"
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+fi
+
+if [ -d $HOME/.poetry/bin ]; then
+  echo "load poetry"
+  export PATH="$HOME/.poetry/bin:$PATH"
+fi
+
+if [ -d $HOME/.perl-extlib ]; then
+  export PERL_CPANM_OPT="--local-lib=$HOME/.perl-extlib"
+  export PERL5LIB="$HOME/.perl-extlib/lib/perl5:$PERL5LIB"
+fi
+
 ## alias
 ## ==================================
 
@@ -55,59 +93,26 @@ fi
 if [ -e "/Applications/Emacs.app/Contents/MacOS/Emacs" ]; then
   alias emacs='open -a Emacs "$@"'
 fi
-if [ -e "/cygdrive/d/ProgramFiles/emacs-23.3a/bin/emacs" ]; then
-  alias emacs='/cygdrive/d/ProgramFiles/emacs-23.3a/bin/emacsclientw "$@"'
-fi
-
-reload(){
-  [[ `readlink /proc/$$/exe` == *bash ]] && echo "reload ~/.bashrc" && source ~/.bashrc
-  [[ `readlink /proc/$$/exe` == *zsh ]] && echo "reload ~/.zshrc" && source ~/.zshrc
-}
 
 if type poetry >/dev/null 2>&1; then
   alias prp='poetry run python'
 fi
 
-alias g='cd $(ghq root)/$(ghq list | peco)'
 if type peco >/dev/null 2>&1; then
-  :
+  alias g='cd $(ghq root)/$(ghq list | peco)'
+fi
+
+if [[ `readlink /proc/$$/exe` == *bash ]]; then
+  alias reload=". ~/.bashrc; echo reloaded ~/.bashrc"
+fi
+if [[ `readlink /proc/$$/exe` == *zsh ]]; then
+  alias reload=". ~/.zshrc; echo reloaded ~/.zshrc"
 fi
 
 mkcd(){
   mkdir -p $1
   cd $1
 } 
-
-## Local Program Environment
-## ====================
-
-if [ -s $HOME/.rbenv/bin/rbenv -o -d $HOME/.rbenv ]; then
-  echo "load rbenv"
-  export PATH="$HOME/.rbenv/bin:$PATH"
-  eval "$(rbenv init -)"
-  [[ `readlink /proc/$$/exe` == *bash ]] && [ -s ~/.rbenv/completions/rbenv.bash ] && \
-    echo "load rbenv.bash" && \
-    source ~/.rbenv/completions/rbenv.bash 2> /dev/null
-# for zsh completion is broken
-#  [[ `readlink /proc/$$/exe` == *zsh ]] && [ -s ~/.rbenv/completions/rbenv.zsh ] && \
-#    echo "load rbenv.zsh" && \
-#    source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
-fi
-
-if [ -d $HOME/.pyenv ]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-fi
-
-if [ -d $HOME/.poetry/bin ]; then
-  export PATH="$HOME/.poetry/bin:$PATH"
-fi
-
-if [ -d $HOME/.perl-extlib ]; then
-  export PERL_CPANM_OPT="--local-lib=$HOME/.perl-extlib"
-  export PERL5LIB="$HOME/.perl-extlib/lib/perl5:$PERL5LIB"
-fi
 
 ## environment variable
 ## ====================
@@ -118,22 +123,6 @@ export PAGER=less
 
 [ $TERM = "eterm-color" ] && TERM=xterm-color
 [ $TERM = "xterm" ] && TERM=xterm-256color
-
-[ -d ~/.local/bin ] && export PATH=~/.local/bin:$PATH
-
-# ignorespace+ignoredups　空白文字で始まる行を保存しない、以前の履歴と一致する行を保存しない
-HISTCONTROL=ignoreboth
-
-# HISTFILE=  # shell依存のため設定しない
-
-# ヒストリファイルの最大値 -1:無限
-HISTFILESIZE=-1
-
-# ヒストリファイルの保存するコマンド数
-HISTSIZE=-1
-
-# historyコマンドの出力フォーマット
-HISTTIMEFORMAT='%F %T '
 
 ## other
 ## ====================

@@ -26,24 +26,12 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for zsh-users/zsh-complet
 
 source ~/.shrc.share
 
-function peco-history-selection() {
-    BUFFER=`history -n 1 | tac | uniq | awk '!a[$0]++' | peco --query "$READLINE_LINE"`
-    CURSOR=$#BUFFER
-    zle reset-prompt
-}
-
-#if type peco >/dev/null 2>&1; then
-#  zle -N peco-history-selection
-#  bindkey '^R' peco-history-selection
-#fi
-
-
 # 環境依存設定
 # ================================================
 
 # 重複したパスを削除
-typeset -U path
-typeset -U fpath
+typeset -U path PATH
+typeset -U fpath FPATH
 
 # プログラムパス
 path=(
@@ -140,8 +128,8 @@ bindkey "[B" history-beginning-search-forward-end
 
 # 複数行コマンドの場合、上記の設定だと少々不都合
 # tcshの様にする場合は以下のようにする
-#bindkey "^P" history-beginning-search-backward-end
-#bindkey "^N" history-beginning-search-forward-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
 
 # インクリメンタルサーチの設定
 #bindkey "^R" history-incremental-search-backward

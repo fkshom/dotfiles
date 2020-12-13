@@ -5,16 +5,20 @@ case $- in
       *) return;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
+# ignorespace+ignoredups　空白文字で始まる行を保存しない、以前の履歴と一致する行を保存しない
 HISTCONTROL=ignoreboth
 
 # append to the history file, don't overwrite it
 shopt -s histappend
 
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+# ヒストリファイルの最大値 -1:無限
+HISTFILESIZE=-1
+
+# ヒストリファイルの保存するコマンド数
+HISTSIZE=-1
+
+# historyコマンドの出力フォーマット
+HISTTIMEFORMAT='%F %T '
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
