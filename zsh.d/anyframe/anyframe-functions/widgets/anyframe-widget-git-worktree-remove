@@ -1,0 +1,25 @@
+function git-worktree-remove-and-delete-branch(){
+  worktree_path="$1"
+  branchname=${1##*/}
+  
+  GIT_SUPERROOT_DIR=$(r=$(git rev-parse --git-dir) && r=$(cd "$r" && pwd)/ && echo "${r%%/.git/*}")
+  cmd="cd -- ${GIT_SUPERROOT_DIR}"
+  echo $cmd
+  eval "$cmd"
+  cmd="git worktree remove $worktree_path"
+  echo $cmd
+  #eval $cmd
+  cmd="git branch -D $branchname"
+  echo $cmd
+  #eval $cmd
+}
+anyframe-source-git-worktree \
+  | anyframe-selector-auto \
+  | awk '{print $1}' \
+  | anyframe-action-execute git-worktree-remove-and-delete-branch
+
+# Local Variables:
+# mode: Shell-Script
+# End:
+# vim: ft=zsh
+
