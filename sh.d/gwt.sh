@@ -12,14 +12,14 @@ function set-filter() {
   while [[ -n $filters ]]; do
     filter=${filters%%:*}
     if type "$filter" >/dev/null 2>&1; then
-      [[ "$filter" = "fzf" ]] \
+      [[ "$filter" == "fzf" ]] \
         && filter=($filter --preview "$previewer") \
         && multi_filter=($filter --multi --ansi --prompt="gwt >")
-      [[ "$filter" = "fzf-tmux" ]] \
+      [[ "$filter" == "fzf-tmux" ]] \
         && filter=($filter --preview "$previewer") \
         && multi_filter=($filter --multi --ansi --prompt="gwt >")
-      #[[ "$filter" = "fzf" ]] && filter=($filter --ansi --prompt="gwt >") && multi_filter=($filter --multi --ansi --prompt="gwt >")
-      #[[ "$filter" = "fzf-tmux" ]] && filter=($filter -r --ansi --prompt="gwt >") && multi_filter=($filter --multi --ansi --prompt="gwt >")
+      #[[ "$filter" == "fzf" ]] && filter=($filter --ansi --prompt="gwt >") && multi_filter=($filter --multi --ansi --prompt="gwt >")
+      #[[ "$filter" == "fzf-tmux" ]] && filter=($filter -r --ansi --prompt="gwt >") && multi_filter=($filter --multi --ansi --prompt="gwt >")
       return 0
     else
       filters="${filters#*:}"
@@ -100,16 +100,27 @@ gwt-cd(){
   fi
 }
 
+interactiveprompt() {
+  local l="$1"
+  if [[ `readlink /proc/$$/exe` == *bash ]]; then
+    READLINE_LINE="$l"
+    READLINE_POINT=${#l}
+  elif [[ `readlink /proc/$$/exe` == *zsh ]]; then 
+    BUFFER="$l"
+    zle reset-prompt
+  fi
+}
 gwt-ghq(){
   set-filter
   local src
-  echo "${filter[@]}"
+  #echo "${filter[@]}"
   src=$(ghq list | "${filter[@]}")
   if [ -n "$src" ]; then
-    local l="cd $(ghq root)/$src"
-    READLINE_LINE="$l"
-    READLINE_POINT=${#l}
+    local l="builtin cd $(ghq root)/$src"
+    interactiveprompt "$l"
+#    READLINE_LINE="$l"
+#    READLINE_POINT=${#l}
+#    BUFFER="$l"
+#    zle reset-prompt
   fi
 }
-
-
