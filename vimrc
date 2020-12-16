@@ -42,6 +42,12 @@ augroup highlightIdegraphicSpace
   autocmd VimEnter,WinEnter * let w:m1 = matchadd("IdeographicSpace", "　")
 augroup END
 
+" カーソル位置記憶
+augroup vimrcEx
+  au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
+  \ exe "normal g`\"" | endif
+augroup END
+
 " ステータスラインを常に表示
 set showtabline=2
 set laststatus=2
