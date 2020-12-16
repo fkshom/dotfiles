@@ -1,0 +1,24 @@
+function git-worktree-add-and-cd(){
+  echo $1
+  commit_ish=$1
+  branchname=${1##*/}
+  
+  GIT_SUPERROOT_DIR=$(r=$(git rev-parse --git-dir) && r=$(cd "$r" && pwd)/ && echo "${r%%/.git/*}")
+  cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
+  echo $cmd
+  $cmd
+  cmd="cd -- ${GIT_SUPERROOT_DIR}/worktrees/$branchname"
+  echo $cmd
+  $cmd
+}
+anyframe-source-git-branch -a \
+  | grep -v -e '->' \
+  | anyframe-selector-auto \
+  | awk '{print $1}' \
+  | anyframe-action-execute git-worktree-add-and-cd
+
+# Local Variables:
+# mode: Shell-Script
+# End:
+# vim: ft=zsh
+

@@ -7,10 +7,12 @@ source ~/.zinit/zinit.zsh
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-zinit light zsh-users/zsh-autosuggestions
+#zinit light zsh-users/zsh-autosuggestions
 zinit light zdharma/fast-syntax-highlighting
 zinit light zsh-git-prompt/zsh-git-prompt
 zinit load zdharma/history-search-multi-word
+zinit load 39e/zsh-completions-anyenv
+zinit light mollifier/anyframe
 
 zinit ice from"gh-r" as"program"
 zinit load junegunn/fzf-bin
@@ -20,6 +22,16 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for zsh-users/zsh-complet
 # load alias, environment variable, and so on
 # ==========================================
 
+
+fpath=($fpath ~/.zsh.d/anyframe-widgets/)
+for file in ~/.zsh.d/anyframe-widgets/*(N-.); do
+    echo $file
+    local function_name="${file:t}"
+    autoload -Uz -- "$function_name"
+    zle -N -- "$function_name"
+done
+
+
 source ~/.shrc.share
 
 function peco-history-selection() {
@@ -28,10 +40,10 @@ function peco-history-selection() {
     zle reset-prompt
 }
 
-if type peco >/dev/null 2>&1; then
-  zle -N peco-history-selection
-  bindkey '^R' peco-history-selection
-fi
+#if type peco >/dev/null 2>&1; then
+#  zle -N peco-history-selection
+#  bindkey '^R' peco-history-selection
+#fi
 
 
 # 環境依存設定
@@ -158,7 +170,16 @@ function history-all { history -E 1 }
 # viライクキーバインド
 #bindkey -v
 # Emacsライクキーバインド
-bindkey -e
+#bindkey -e
+
+bindkey '^xg' anyframe-widget-cd-ghq-repository
+bindkey '^x^g' anyframe-widget-cd-ghq-repository
+
+bindkey '^xk' anyframe-widget-kill
+bindkey '^x^k' anyframe-widget-kill
+
+bindkey '^xp' anyframe-widget-cd-git-worktree
+bindkey '^x^p' anyframe-widget-cd-git-worktree
 
 #BackSpaceキーの割り当て(端末によって設定が違う)
 #console setting
@@ -189,6 +210,7 @@ fi
 # Ctrl+矢印キーで単語移動
 bindkey ";5C" forward-word
 bindkey ";5D" backward-word
+
 
 # 補完機能
 # ================================================
