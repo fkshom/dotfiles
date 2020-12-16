@@ -1,4 +1,6 @@
 
+fpath=($fpath ~/.zsh.d/anyframe(N-/))
+
 # load zinit
 # ==============================
 
@@ -21,16 +23,6 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for zsh-users/zsh-complet
 
 # load alias, environment variable, and so on
 # ==========================================
-
-
-fpath=($fpath ~/.zsh.d/anyframe-widgets/)
-for file in ~/.zsh.d/anyframe-widgets/*(N-.); do
-    echo $file
-    local function_name="${file:t}"
-    autoload -Uz -- "$function_name"
-    zle -N -- "$function_name"
-done
-
 
 source ~/.shrc.share
 
