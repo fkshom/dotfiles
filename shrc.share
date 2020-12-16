@@ -60,8 +60,8 @@ if [ -e "/cygdrive/d/ProgramFiles/emacs-23.3a/bin/emacs" ]; then
 fi
 
 reload(){
-  [[ "$SHELL" == *bash ]] && source ~/.bashrc
-  [[ "$SHELL" == *zsh ]] && source ~/.zshrc
+  [[ `readlink /proc/$$/exe` == *bash ]] && echo "reload ~/.bashrc" && source ~/.bashrc
+  [[ `readlink /proc/$$/exe` == *zsh ]] && echo "reload ~/.zshrc" && source ~/.zshrc
 }
 
 if type poetry >/dev/null 2>&1; then
@@ -82,12 +82,16 @@ mkcd(){
 ## ====================
 
 if [ -s $HOME/.rbenv/bin/rbenv -o -d $HOME/.rbenv ]; then
+  echo "load rbenv"
   export PATH="$HOME/.rbenv/bin:$PATH"
   eval "$(rbenv init -)"
-  [[ $SHELL == "bash" ]] && [ -s ~/.rbenv/completions/rbenv.bash ] && \
+  [[ `readlink /proc/$$/exe` == *bash ]] && [ -s ~/.rbenv/completions/rbenv.bash ] && \
+    echo "load rbenv.bash" && \
     source ~/.rbenv/completions/rbenv.bash 2> /dev/null
-  [[ $SHELL == "zsh" ]] && [ -s ~/.rbenv/completions/rbenv.zsh ] && \
-    source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
+# for zsh completion is broken
+#  [[ `readlink /proc/$$/exe` == *zsh ]] && [ -s ~/.rbenv/completions/rbenv.zsh ] && \
+#    echo "load rbenv.zsh" && \
+#    source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
 fi
 
 if [ -d $HOME/.pyenv ]; then
