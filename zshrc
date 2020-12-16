@@ -197,6 +197,9 @@ bindkey ";5D" backward-word
 # 補完機能を有効にする
 autoload -Uz compinit
 
+autoload bashcompinit && bashcompinit
+complete -C '/usr/local/bin/aws_completer' aws
+
 # Cygwinのときは-uオプションをつける
 # zcompdumpファイルの格納パスを変更
 compinit -u -d /tmp/$USER.zcompdump

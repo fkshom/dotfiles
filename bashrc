@@ -141,3 +141,4 @@ fi
 [ -f ~/.shrc.share ] && source ~/.shrc.share
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
 
+complete -C '/usr/local/bin/aws_completer' aws
