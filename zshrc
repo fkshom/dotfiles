@@ -21,8 +21,6 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for zsh-users/zsh-complet
 # ==========================================
 
 source ~/.shrc.share
-alias fig='docker-compose'
-compdef fig=docker-compose
 
 function peco-history-selection() {
     BUFFER=`history -n 1 | tac | uniq | awk '!a[$0]++' | peco --query "$READLINE_LINE"`
@@ -41,6 +39,7 @@ fi
 
 # 重複したパスを削除
 typeset -U path
+typeset -U fpath
 
 # プログラムパス
 path=(
@@ -49,7 +48,7 @@ path=(
 
 
 # 関数群の追加
-export FPATH=~/.zsh.d:$FPATH
+fpath+=(~/.zsh.d)
 autoload -U dl
 
 
@@ -203,6 +202,9 @@ complete -C '/usr/local/bin/aws_completer' aws
 # Cygwinのときは-uオプションをつける
 # zcompdumpファイルの格納パスを変更
 compinit -u -d /tmp/$USER.zcompdump
+
+alias fig='docker-compose'
+compdef fig=docker-compose
 
 # ディレクトリ名を入力するだけでカレントディレクトリを変更
 setopt auto_cd
