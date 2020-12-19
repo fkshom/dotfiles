@@ -13,4 +13,5 @@ else
 fi
 
 echo "Finished"
+echo "`bundle config set --local path 'vendor/bundle'"
 
