@@ -76,9 +76,13 @@ setopt transient_rprompt
 
 # ターミナルのタイトル
 case "${TERM}" in
-    kterm*|xterm|cygwin)
+    kterm*|xterm*|cygwin)
 	precmd() {
-            echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+        #echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+        #echo -ne "\033]0;${PWD}\007"
+        #print -Pn "\e]0;%n@%m: %~\a"
+        #print -Pn "\e]0;%~\a"
+        print -Pn "\e]0;${PWD/${PWD%*\/*\/*}\/}\a"
 	}
 	;;
 esac
