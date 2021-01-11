@@ -1,0 +1,156 @@
+
+function anyframe-selector-fzf-tmux() {
+  if [[ $# -gt 0 ]]; then
+    ${fzf_tmux_path:-fzf-tmux} --query "$@"
+  else
+    ${fzf_tmux_path:-fzf-tmux}
+  fi
+}
+function anyframe-selector-fzf() {
+  if [[ $# -gt 0 ]]; then
+    ${fzf_path:-fzf} --query "$@"
+  else
+    ${fzf_path:-fzf}
+  fi
+}
+function anyframe-selector-peco() {
+  if [[ $# -gt 0 ]]; then
+    ${peco_path:-peco} --query "$@"
+  else
+    ${peco_path:-peco}
+  fi
+}
+function anyframe-selector-percol() {
+  if [[ $# -gt 0 ]]; then
+    ${percol_path:-percol} --query "$@"
+  else
+    ${percol_path:-percol}
+  fi
+}
+function anyframe-selector-gof() {
+  if [[ $# -gt 0 ]]; then
+    ${gof_path:-gof} --query "$@"
+  else
+    ${gof_path:-gof}
+  fi
+}
+function anyframe-selector-auto() {
+  local filter=
+  if [[ -z "${selector_mode}" ]]; then
+    local filters="fzf-tmux:fzf:peco:percol:gof"
+    while [[ -n $filters ]]; do
+      filter=${filters%%:*}
+      if type "$filter" >/dev/null 2>&1; then
+        filter=($filter)
+        break
+      else
+        filters="${filters#*:}"
+      fi
+    done
+    if [[ -z "${filter}" ]]; then
+      echo "anyframe: not found any of gof, percol, peco, fzf, or fzf-tmux" 1>&2
+      return 1
+    fi
+  else
+    filter="${selector_mode}"
+  fi
+  anyframe-selector-${filter} "$@"
+}
+
+function anyframe-source-git-branch() {
+  set -x
+  local include_current_branch="1"
+  local option OPTARG OPTIND
+  declare -a git_option
+  git_option=("--list" "-v")
+  while getopts ':inar' option; do
+    case $option in
+    i)
+      include_current_branch="1"
+      ;;
+    n)
+      include_current_branch="0"
+      ;;
+    a)
+      git_option+=("-a")
+      ;;
+    r)
+      git_option+=("-r")
+      ;;
+    *)
+      echo "$0: invalid option -- $OPTARG" 1>&2
+      return 1
+      ;;
+    esac
+  done
+  shift $(expr $OPTIND - 1)
+
+  git branch ${git_option[@]} \
+  | {
+    if [[ "$include_current_branch" == "1" ]]; then
+      sed 's/^\*//'
+    else
+      # remove current branch name
+      grep -v '^\*'
+    fi
+  } \
+  | sed 's/^  *//'
+}
+function anyframe-build-command() {
+  local func_name="$1"
+  local selected_item="$(cat)"
+  if [[ -z "$selected_item" ]]; then
+    return 1
+  fi
+  echo $($func_name "${selected_item}")
+}
+function anyframe-action-command() {
+  local func_name="$1"
+  local selected_item="$(cat)"
+  if [[ -z "$selected_item" ]]; then
+    return 1
+  fi
+  eval $func_name "${selected_item}"
+}
+function git-worktree-add-and-cd() {
+  echo $1
+  commit_ish=$1
+  branchname=${1##*/}
+  
+  GIT_SUPERROOT_DIR=$(r=$(git rev-parse --git-dir) && r=$(cd "$r" && pwd)/ && echo "${r%%/.git/*}")
+  cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
+  echo $cmd
+  $cmd
+  cmd="cd ${GIT_SUPERROOT_DIR}/worktrees/$branchname"
+  echo $cmd
+  $cmd
+}
+function anyframe-action-interactiveprompt() {
+  local l="$1"
+  if [[ `readlink /proc/$$/exe` == *bash ]]; then
+    READLINE_LINE="$l"
+    READLINE_POINT=${#l}
+  elif [[ `readlink /proc/$$/exe` == *zsh ]]; then
+    BUFFER="$l"
+    CURSOR=$#BUFFER
+    zle reset-prompt
+  fi
+}
+function anyframe-widget-cd-git-worktree() {
+  anyframe-source-git-branch -a \
+  | grep -v -e '->' \
+  | anyframe-selector-auto \
+  | awk '{print $1}' \
+  | anyframe-action-command git-worktree-add-and-cd
+}
+function anyframe-widget-cd-git-worktree_() {
+  command=$(
+    anyframe-source-git-branch -a \
+    | grep -v -e '->' \
+    | anyframe-selector-auto \
+    | awk '{print $1}' \
+    | anyframe-build-command git-worktree-add-and-cd \
+  )
+  anyframe-action-interactiveprompt "${command}"
+}
+
