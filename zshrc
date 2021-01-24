@@ -15,6 +15,7 @@ zinit light zsh-git-prompt/zsh-git-prompt
 zinit load zdharma/history-search-multi-word
 zinit load 39e/zsh-completions-anyenv
 zinit light mollifier/anyframe
+#zinit light b4b4r07/enhancd
 
 zinit ice from"gh-r" as"program"
 zinit load junegunn/fzf-bin
@@ -203,7 +204,9 @@ bindkey ";5D" backward-word
 autoload -Uz compinit
 
 autoload bashcompinit && bashcompinit
-complete -C '/usr/local/bin/aws_completer' aws
+if [ -e "/usr/local/bin/aws_completer" ]; then
+    complete -C '/usr/local/bin/aws_completer' aws
+fi
 
 # Cygwinのときは-uオプションをつける
 # zcompdumpファイルの格納パスを変更
