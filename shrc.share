@@ -109,6 +109,7 @@ fi
 if [[ `readlink /proc/$$/exe` == *zsh ]]; then
   alias reload=". ~/.zshrc; echo reloaded ~/.zshrc"
 fi
+alias htb='sudo openvpn $HOME/.vpn/startingpoint.ovpn'
 
 mkcd(){
   mkdir -p $1
