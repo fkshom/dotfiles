@@ -34,6 +34,10 @@ get_os_distribution() {
   fi
 }
 
+configure_debian() {
+  configure_ubuntu
+}
+
 configure_ubuntu() {
   echo "Running configure_ubuntu"
 
@@ -55,10 +59,27 @@ configure_ubuntu() {
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 26
 
     # enable switch window
+    echo "enable switch window"
     gsettings set org.gnome.desktop.wm.keybindings switch-applications "['']"
     gsettings set org.gnome.desktop.wm.keybindings switch-applications-backward "['']"
     gsettings set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
     gsettings set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
+
+    # disable gnome-terminal switch-to-tab
+    echo "disable gnome-terminal switch-to-tab"
+    GSETTINGS_SCHEMA=org.gnome.Terminal.Legacy.Keybindings
+    GSETTINGS_PATH=/org/gnome/terminal/legacy/keybindings/
+    SCHEMA_PATH=$GSETTINGS_SCHEMA:$GSETTINGS_PATH
+    gsettings set ${SCHEMA_PATH} switch-to-tab-1  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-2  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-3  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-4  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-5  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-6  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-7  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-8  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-9  'disabled'
+    gsettings set ${SCHEMA_PATH} switch-to-tab-10 'disabled'
   
   fi
 
