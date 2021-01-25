@@ -57,6 +57,10 @@ function anyframe-selector-auto() {
   anyframe-selector-${filter} "$@"
 }
 
+function anyframe-source-ghq-repository() {
+  ghq list --full-path
+}
+
 function anyframe-source-git-branch() {
   set -x
   local include_current_branch="1"
@@ -113,17 +117,16 @@ function anyframe-action-command() {
   eval $func_name "${selected_item}"
 }
 function git-worktree-add-and-cd() {
-  echo $1
+  echo $1 >&2
   commit_ish=$1
   branchname=${1##*/}
   
   GIT_SUPERROOT_DIR=$(r=$(git rev-parse --git-dir) && r=$(cd "$r" && pwd)/ && echo "${r%%/.git/*}")
   cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
-  echo $cmd
-  $cmd
+  echo $cmd >&2
+  eval $cmd >&2
   cmd="cd ${GIT_SUPERROOT_DIR}/worktrees/$branchname"
   echo $cmd
-  $cmd
 }
 function anyframe-action-interactiveprompt() {
   local l="$1"
@@ -136,14 +139,20 @@ function anyframe-action-interactiveprompt() {
     zle reset-prompt
   fi
 }
-function anyframe-widget-cd-git-worktree() {
+function anyframe-widget-cd-ghq-repository() {
+  command=$(anyframe-source-ghq-repository \
+  | anyframe-selector-auto
+  )
+  anyframe-action-interactiveprompt "cd -- ${command}"
+}
+function anyframe-widget-cd-git-worktree_() {
   anyframe-source-git-branch -a \
   | grep -v -e '->' \
   | anyframe-selector-auto \
   | awk '{print $1}' \
   | anyframe-action-command git-worktree-add-and-cd
 }
-function anyframe-widget-cd-git-worktree_() {
+function anyframe-widget-cd-git-worktree() {
   command=$(
     anyframe-source-git-branch -a \
     | grep -v -e '->' \

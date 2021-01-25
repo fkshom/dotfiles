@@ -27,6 +27,7 @@
     ~/.shrc.share:
     ~/.bashrc:
       force: true
+    ~/.bash.d:
     ~/.sh.d:
 
 

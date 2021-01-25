@@ -142,9 +142,11 @@ if [ -f ~/.sh.d/gwt.sh ]; then
     bind -x '"\C-]g":gwt-ghq'
 fi
 
-if [ -d ~/.bash.d/anyframe ]; then
+if [ -f ~/.bash.d/anyframe ]; then
     source ~/.bash.d/anyframe
-    bind -x '"\C-x\C-g": anyframe-widget-cd-git-worktree'
+    echo anyframe
+    bind -x '"\C-x\C-g": anyframe-widget-cd-ghq-repository'
+    bind -x '"\C-x\C-p": anyframe-widget-cd-git-worktree'
 fi
 
 [ -f ~/.shrc.share ] && source ~/.shrc.share
