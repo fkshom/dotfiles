@@ -101,7 +101,7 @@ function anyframe-source-git-branch() {
   | sed 's/^  *//'
 }
 function anyframe-build-command() {
-  local func_name="$1"
+  local func_name="$@"
   local selected_item="$(cat)"
   if [[ -z "$selected_item" ]]; then
     return 1
@@ -140,17 +140,11 @@ function anyframe-action-interactiveprompt() {
   fi
 }
 function anyframe-widget-cd-ghq-repository() {
-  command=$(anyframe-source-ghq-repository \
-  | anyframe-selector-auto
+  repository=$(
+    anyframe-source-ghq-repository \
+    | anyframe-selector-auto
   )
-  anyframe-action-interactiveprompt "cd -- ${command}"
-}
-function anyframe-widget-cd-git-worktree_() {
-  anyframe-source-git-branch -a \
-  | grep -v -e '->' \
-  | anyframe-selector-auto \
-  | awk '{print $1}' \
-  | anyframe-action-command git-worktree-add-and-cd
+  anyframe-action-interactiveprompt "cd -- ${repository}"
 }
 function anyframe-widget-cd-git-worktree() {
   command=$(
