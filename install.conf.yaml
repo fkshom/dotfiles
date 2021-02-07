@@ -14,6 +14,8 @@
     ~/.zsh.d:
     ~/.Xmodmap:
     ~/.config/autostart/xmodmap.desktop:
+    ~/.local/share/albert/org.albert.extension.python/modules/window_switcher/__init__.py:
+      path: local/albert/window_switcher.conf
     ~/.config/albert/albert.conf:
       path: config/albert/albert.conf
     ~/.config/systemd/user/ssh-agent.service:
