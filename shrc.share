@@ -106,7 +106,7 @@ if type poetry >/dev/null 2>&1; then
 fi
 
 if type peco >/dev/null 2>&1; then
-  alias g='cd $(ghq root)/$(ghq list | peco)'
+  alias gl='cd $(ghq root)/$(ghq list | peco)'
 fi
 
 if [[ `readlink /proc/$$/exe` == *bash ]]; then
