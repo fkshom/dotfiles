@@ -19,6 +19,11 @@ if [ -s $HOME/.rbenv/bin/rbenv -o -d $HOME/.rbenv ]; then
 #    source ~/.rbenv/completions/rbenv.zsh 2> /dev/null
 fi
 
+if which ruby >/dev/null && which gem >/dev/null; then
+    PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+fi
+
+
 if [ -d $HOME/.pyenv ]; then
   echo "load pyenv"
   export PYENV_ROOT="$HOME/.pyenv"
