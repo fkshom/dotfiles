@@ -99,7 +99,7 @@ if type bundle >/dev/null 2>&1; then
   alias be='bundle exec'
   alias ber='bundle exec ruby'
   alias rspec='rspec -cfd'
-end
+fi
 
 if [ -e "/Applications/MacVim.app/Contents/MacOS/Vim" ]; then
   alias vi='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
