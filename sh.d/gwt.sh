@@ -87,11 +87,15 @@ gwt-cd(){
   GIT_CDUP_DIR=$(git rev-parse --show-cdup)
   GIT_TOPLEVEL_DIR=$(git rev-parse --show-toplevel)
   GIT_SUPERROOT_DIR=$(r=$(git rev-parse --git-dir) && r=$(cd "$r" && pwd)/ && echo "${r%%/.git/*}")
-  branches=$(git branch --all | grep -v HEAD | cut -b 3- )
-  commit_ish=$(echo "$branches" | "${filter[@]}")
-  branchname=${commit_ish##*/}
+  #branches=$(git branch --all | grep -v HEAD | cut -b 3- )
+  branches=$(git branch --all --format='%(refname:short)' | grep -v HEAD )
+  commit_ish=$(echo "$branches" | "${filter[@]}")  # remote/origin/branch1 or branch1
+  branchname=${commit_ish##*/}                     # branch1
   if [ -n "$branchname" ]; then
-      cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
+      #cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
+      # $branchnameがローカルになく、リモートに同じ名前の追跡ブランチがある場合は次と同じ動作をする
+      # git worktree add --track -b $branchname <path> <remote>/$branchname
+      cmd="git worktree add ${GIT_SUPERROOT_DIR}/worktrees/$branchname $branchname"
       echo $cmd
       $cmd
       local l="cd ${GIT_SUPERROOT_DIR}/worktrees/$branchname"

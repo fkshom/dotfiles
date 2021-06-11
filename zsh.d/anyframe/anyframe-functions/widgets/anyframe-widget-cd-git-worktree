@@ -4,14 +4,17 @@ function git-worktree-add-and-cd(){
   branchname=${1##*/}
   
   GIT_SUPERROOT_DIR=$(r=$(git rev-parse --git-dir) && r=$(cd "$r" && pwd)/ && echo "${r%%/.git/*}")
-  cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
-  echo $cmd
-  eval $cmd
+  #cmd="git worktree add -b $branchname ${GIT_SUPERROOT_DIR}/worktrees/$branchname $commit_ish"
+  if [ ! -d ${GIT_SUPERROOT_DIR}/worktrees/$branchname ]; then
+    cmd="git worktree add ${GIT_SUPERROOT_DIR}/worktrees/$branchname $branchname"
+    echo $cmd
+    eval $cmd
+  fi
   cmd="cd -- ${GIT_SUPERROOT_DIR}/worktrees/$branchname"
   echo $cmd
   eval $cmd
 }
-anyframe-source-git-branch -a \
+anyframe-source-git-branch2 -a \
   | grep -v -e '->' \
   | anyframe-selector-auto \
   | awk '{print $1}' \
