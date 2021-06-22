@@ -45,6 +45,13 @@ if [ -d $HOME/.perl-extlib ]; then
   export PERL5LIB="$HOME/.perl-extlib/lib/perl5:$PERL5LIB"
 fi
 
+if [ -d $HOME/.nvm ]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [[ `readlink /proc/$$/exe` == *bash ]] && \
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
 ## alias
 ## ==================================
 
