@@ -73,31 +73,37 @@ alias dir='ls --color=auto --format=vertical'
 alias vdir='ls --color=auto --format=long'
 alias sl=''
 alias echo='echo -e'
-alias sc='systemctl'
-alias scr='systemctl restart'
-alias scs='systemctl status'
-alias po='poetry'
-alias prp='poetry run python3'
 alias ..='cd ..'
 alias to64='cat - | bzip2 | base64 -w 180'
 alias from64='cat - | base64 -d | bunzip2'
-alias t='tig'
-alias ta='tig --all'
-alias tigall='tig --all'
-alias g='git'
-compdef g=git
 
 _SHELL=''
-if [[ `readlink /proc/$$/exe` == *bash ]]; then
-  _SHELL='bash'
+[[ `readlink /proc/$$/exe` == *bash ]] && _SHELL='bash'
+[[ `readlink /proc/$$/exe` == *zsh ]] &&  _SHELL='zsh'
+
+if type systemctl > /dev/null 2>&1; then
+  alias sc='systemctl'
+  alias scr='systemctl restart'
+  alias scs='systemctl status'
+  [[ $_SHELL == 'bash' ]] && complete -F _systemctl sc
+  [[ $_SHELL == 'zsh' ]]  && compdef sc=systemctl
 fi
-if [[ `readlink /proc/$$/exe` == *zsh ]]; then
-  _SHELL='zsh'
+
+if type tig > /dev/null 2>&1; then
+  alias t='tig'
+  alias ta='tig --all'
+  alias tigall='tig --all'
+fi
+
+if type git > /dev/null 2>&1; then
+  alias g='git'
+  #[[ $_SHELL == 'bash' ]] && __git_complete g __git_main
+  [[ $_SHELL == 'zsh' ]] && compdef g=git
 fi
 
 if type docker-compose > /dev/null 2>&1; then
   alias fig='docker-compose'
-  compdef fig=docker-compose
+  [[ $_SHELL == 'zsh' ]]  && compdef fig=docker-compose
 fi
 
 if type kubectl >/dev/null 2>&1; then
@@ -139,6 +145,7 @@ if [ -e "/Applications/Emacs.app/Contents/MacOS/Emacs" ]; then
 fi
 
 if type poetry >/dev/null 2>&1; then
+  alias po='poetry'
   alias pr='poetry run'
   alias pi='poetry install'
   alias prp='poetry run python'
