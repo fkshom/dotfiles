@@ -87,8 +87,24 @@ alias tigall='tig --all'
 alias g='git'
 compdef g=git
 
-alias fig='docker-compose'
-compdef fig=docker-compose
+_SHELL=''
+if [[ `readlink /proc/$$/exe` == *bash ]]; then
+  _SHELL='bash'
+fi
+if [[ `readlink /proc/$$/exe` == *zsh ]]; then
+  _SHELL='zsh'
+fi
+
+if type docker-compose > /dev/null 2>&1; then
+  alias fig='docker-compose'
+  compdef fig=docker-compose
+fi
+
+if type kubectl >/dev/null 2>&1; then
+  alias k='kubectl'
+  [[ $_SHELL == 'bash' ]] && source <(kubectl completion bash) && complete -F __start_kubectl k
+  [[ $_SHELL == 'zsh' ]]  && source <(kubectl completion zsh)  && compdef k=kubectl
+fi
 
 if type xsel >/dev/null 2>&1; then
   alias pbcopy='xsel --clipboard --input'
