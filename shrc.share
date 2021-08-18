@@ -180,6 +180,10 @@ mapshare(){
   fi
 }
 
+gi() {
+  curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@
+} 
+
 ## environment variable
 ## ====================
 
