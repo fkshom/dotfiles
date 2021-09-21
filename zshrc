@@ -215,9 +215,6 @@ fi
 # zcompdumpファイルの格納パスを変更
 compinit -u -d /tmp/$USER.zcompdump
 
-alias fig='docker-compose'
-compdef fig=docker-compose
-
 # ディレクトリ名を入力するだけでカレントディレクトリを変更
 setopt auto_cd
 
