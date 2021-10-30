@@ -15,3 +15,4 @@ unzip -p /tmp/$filename ghq_linux_amd64/misc/zsh/_ghq > ~/.local/share/zsh-compl
 
 rm /tmp/$filename
 
+(cd ~; ln -sf .ghq ghq)
