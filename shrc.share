@@ -200,6 +200,8 @@ export PAGER=less
 
 export MTR_OPTIONS='-o LDRS_ABWV'
 
+export DOCKER_BUILDKIT=1
+
 ## other
 ## ====================
 
