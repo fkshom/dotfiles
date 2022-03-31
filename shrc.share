@@ -188,6 +188,13 @@ gi() {
   curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@
 } 
 
+getmac() {
+  ip a show dev $1 | grep "link/ether" | awk '{print $2}'
+}
+getip() {
+  ip a show dev $1 | grep "inet " | awk '{print $2}'
+} 
+
 ## environment variable
 ## ====================
 
