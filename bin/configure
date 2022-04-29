@@ -99,6 +99,7 @@ configure_ubuntu() {
   sudo systemctl stop apt-daily-upgrade
   sudo systemctl disable apt-daily
   sudo systemctl disable apt-daily-upgrade
+  sudo apt-get remove -y update-notifier
 
   # disable Automatic Error Reporting Service
   echo "disable autmatic error repoting"
