@@ -53,6 +53,16 @@ if [ -d $HOME/.nvm ]; then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
+if [ -e /usr/local/bin/aws_completer ]; then
+  if [[ `readlink /proc/$$/exe` == *bash ]]; then
+    complete -C aws_completer aws
+  fi
+  if [[ `readlink /proc/$$/exe` == *zsh ]]; then
+    #autoload bashcompinit && bashcompinit
+    complete -C '/usr/local/bin/aws_completer' aws
+  fi
+fi
+
 ## alias
 ## ==================================
 
