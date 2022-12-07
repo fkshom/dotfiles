@@ -34,6 +34,12 @@ get_os_distribution() {
   fi
 }
 
+delete_blank_dir() {
+  echo "Running delete_blank_dir"
+  cd ~
+  rmdir Documents/ Music/ Pictures/ Public/ Templates/ Videos/
+}
+
 configure_debian() {
   configure_ubuntu
 }
@@ -144,6 +150,7 @@ EOF
   fi
 }
 
+delete_blank_dir
 configure_`get_os_distribution`
 configure_gitconfig
 
