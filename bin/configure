@@ -13,6 +13,11 @@ get_os_bit() {
 }
 
 get_os_distribution() {
+  id=`cat /etc/os-release | grep -oP "(?<=^ID=).+"`
+  echo $id
+}
+
+get_os_distribution_old() {
   if [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
     if [ -e /etc/lsb-release ]; then
       echo "ubuntu"
@@ -42,6 +47,11 @@ delete_blank_dir() {
 
 configure_debian() {
   configure_ubuntu
+}
+
+configure_kali() {
+  echo "Running configure_kali"
+
 }
 
 configure_ubuntu() {
