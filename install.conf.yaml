@@ -31,6 +31,8 @@
       force: true
     ~/.bash.d:
     ~/.sh.d:
+    ~/usr/sbin:
+      path: sbin
 
 
 - shell:

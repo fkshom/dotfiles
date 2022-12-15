@@ -1,0 +1,350 @@
+#!/usr/bin/env python
+
+import os
+from posixpath import abspath
+import sys
+import dataclasses
+import subprocess
+import argparse
+from pprint import pprint as pp
+import datetime
+import getpass
+import pwd
+import grp
+import re
+from logging import basicConfig, getLogger, StreamHandler, NullHandler, DEBUG, INFO, Formatter
+logger = getLogger(__name__)
+basicConfig(level=DEBUG, format='[%(levelname)5s] %(message)s')
+
+SELVPN_ROOTDIR = "~/.selvpn/"
+SELVPN_OVPNDIR = os.path.join(SELVPN_ROOTDIR, "ovpn/")
+SELVPN_LOGDIR = os.path.join(SELVPN_ROOTDIR, "log/")
+SELVPN_PIDFILE = os.path.join(SELVPN_ROOTDIR, "selvpn.pid")
+SELVPN_STATUSFILE = os.path.join(SELVPN_ROOTDIR, "selvpn.status")
+
+@dataclasses.dataclass
+class Service():
+    name: str
+    authfilepath: str
+    # ovpnfiles: list = dataclasses.field(default_factory=list, init=False)
+    ovpnfiles: list
+
+class OvpnStore():
+    def __init__(self, ovpndir) -> None:
+        self.ovpndir = ovpndir
+        self._services = []
+
+    def _scan(self, ovpndir):
+        ovpndir = os.path.expanduser(ovpndir)
+        services = []
+        dirs = [f for f in os.listdir(ovpndir) if os.path.isdir(os.path.join(ovpndir, f))]
+        for dir in dirs:
+            ovpnfiles = os.listdir(os.path.join(ovpndir, dir))
+            service = Service(
+                name=dir,
+                authfilepath=os.path.join(dir, f"{dir}.auth.txt"),
+                ovpnfiles=ovpnfiles
+            )
+            services.append(service)
+        return services
+
+    @property
+    def services(self):
+        if not self._services:
+            self._services = self._scan(self.ovpndir)
+
+        return self._services
+
+class Peco():
+    @classmethod
+    def peco(cls, input_text):
+        result = subprocess.run('peco', shell=True, input=input_text, stdout=subprocess.PIPE, text=True)
+        return result.stdout.strip()
+
+class OpenVpnProcess():
+    def __init__(self, pidfile):
+        self.pidfile = pidfile
+
+    def start(self, ovpnfile, authfile, logfile, statusfile):
+        username = getpass.getuser()
+        groupid = pwd.getpwnam(username).pw_gid
+        groupname = grp.getgrgid(groupid).gr_name
+
+        ovpnfile = os.path.expanduser(ovpnfile)
+        logfile = os.path.expanduser(logfile)
+        pidfile = os.path.expanduser(self.pidfile)
+
+        cmd = [
+            "sudo",
+            "openvpn",
+            "--daemon",
+            "--config", ovpnfile,
+            "--log-append", logfile,
+            "--writepid", pidfile,
+            "--user", username,
+            "--group", groupname,
+            "--data-ciphers", 'AES-256-GCM:AES^128-GCM:CHACHA20-POLY1305:AES-256-CBC',
+            # "--down-pre",  # Run --down command before TUN/TAP close.
+            # "--up-restart",  # Run up/down commands for all restarts including those caused by --ping-restart or SIGUSR1
+            # "--script-security", "2",
+            # "--up", os.path.abspath(__file__),
+            # "--down", os.path.abspath(__file__),
+            # "--route-up", os.path.abspath(__file__),
+            # "--route-pre-down", os.path.abspath(__file__),
+            # "--route-noexec",  # Don't add routes automatically.  Instead pass routes to --route-up script using environmental variables.
+            # "--route-nopull",  # When used with --client or --pull, accept options pushed by server EXCEPT for routes and dhcp options.
+            # "--client-nat snat|dnat network netmask alias",  # on client add 1-to-1 NAT rule.
+        ]
+        if authfile:
+            authfile = os.path.expanduser(authfile)
+            cmd.extend(["--auth-user-pass", authfile])
+
+        logger.debug(cmd)
+        # cmd = ' '.join(cmd)
+        # logger.debug(cmd)
+        subprocess.run(cmd, shell=False)
+
+        subprocess.run(["sudo", "chown", f"{username}:{groupname}", logfile])
+
+        with open(os.path.expanduser(statusfile), "w") as f:
+            f.write(f"ovpnfile = {ovpnfile}\n")
+            f.write(f"authfile = {authfile or 'Not specified'}\n")
+            f.write(f"logfile = {logfile}\n")
+            f.write(f"pidfile = {pidfile}\n")
+
+    def stop(self):
+        if not self.is_running:
+            return None
+
+        try:
+            import os
+            import signal
+            os.kill(self.pid, signal.SIGTERM)
+            logger.info("openvpn process was killed")
+        except:
+            logger.debug("maybe openvpn was not killed.")
+            pass
+
+        return None
+
+
+    def _process_exists(self, pid: int) -> bool:
+        try:
+            import os
+            os.kill(pid, 0)
+        except OSError:
+            return False
+        else:
+            return True
+
+    @property
+    def pid(self) -> int:
+        if not os.path.exists(os.path.expanduser(self.pidfile)):
+            logger.debug(f"pid file is not found. {self.pidfile}")
+            return None
+
+        with open(os.path.expanduser(self.pidfile), 'r') as f:
+            pid = int(f.read().strip())
+
+        return pid
+
+    @property
+    def is_running(self) -> bool:
+        pid = self.pid
+        logger.debug(f"pid: {pid}")
+        if not pid:
+            return False
+
+        if self._process_exists(int(pid)):
+            return True
+
+        return False
+
+
+def command_connect(args=None):
+    print(args)
+    if not hasattr(args, 'config'):
+        # ファイルの一覧を作成
+        store = OvpnStore(SELVPN_OVPNDIR)
+        files = []
+        for service in store.services:
+            files.extend(list(map(lambda ovpnfilename: os.path.join(service.name, ovpnfilename), service.ovpnfiles)))
+        text = ('\n').join(files)
+
+        # pecoで選択
+        selection = Peco.peco(input_text=text)
+        if selection == '':
+            logger.fatal("no selection")
+            exit(1)
+
+        ovpnfilepath = selection
+        servicename, ovpnfilename = ovpnfilepath.split('/', 1)
+
+        ovpnfile = os.path.join(SELVPN_OVPNDIR, servicename, ovpnfilename)
+        authfile = os.path.join(SELVPN_OVPNDIR, f"{servicename}.auth.txt")
+        if not os.path.exists(os.path.expanduser(authfile)):
+            authfile = None
+    else:
+        ovpnfile = args.config
+        authfile = None
+
+    logfilename = datetime.datetime.now().strftime("%Y%m%d-%H%M%S.%f.txt")
+    logfile = os.path.join(SELVPN_LOGDIR, logfilename)
+
+    pidfile = SELVPN_PIDFILE
+    statusfile = SELVPN_STATUSFILE
+
+    # openvpnコマンドに渡して接続
+    openvpn = OpenVpnProcess(pidfile=pidfile)
+    openvpn.start(
+        ovpnfile=ovpnfile,
+        authfile=authfile,
+        logfile=logfile,
+        statusfile=statusfile,
+    )
+
+def command_status(args=None):
+    pidfile = SELVPN_PIDFILE
+    openvpn = OpenVpnProcess(pidfile=pidfile)
+    if openvpn.is_running:
+        logger.info(f"openvpn is running pid:{openvpn.pid}")
+        return True
+    else:
+        logger.info("openvpn is not running")
+        return False
+
+
+def command_disconnect(args=None):
+    pidfile = SELVPN_PIDFILE
+    openvpn = OpenVpnProcess(pidfile=pidfile)
+    if openvpn.is_running:
+        logger.info(f"openvpn is running pid:{openvpn.pid}")
+        openvpn.stop()
+        return True
+    else:
+        logger.info("openvpn is not running")
+        return False
+
+def command_log(args=None):
+    statusfile = SELVPN_STATUSFILE
+    if not os.path.exists(os.path.expanduser(statusfile)):
+        logger.warn(f"status file '{statusfile} does not exists.")
+        exit(1)
+
+    with open(os.path.expanduser(statusfile), 'r') as f:
+        lines = f.readlines()
+
+    logfileline = [line for line in lines if 'logfile' in line]
+
+
+    if m := re.search(r'logfile = (.+)', logfileline[0]):
+        logfile = m[1]
+
+    with open(logfile, 'r') as f:
+        print(f.read())
+
+
+def command_connect_or_status(args=None):
+    print(args)
+    pidfile = SELVPN_PIDFILE
+    openvpn = OpenVpnProcess(pidfile=pidfile)
+    if not openvpn.is_running:
+        command_connect(args)
+    else:
+        command_status(args)
+
+
+class KillSwitchUsingIptables():
+    def enable(self):
+        cmds = [
+            "iptables -N SELVPN_OUTPUT",
+            "iptables -A SELVPN_OUTPUT -p udp --dport 1443 -j ACCEPT",
+            "iptables -A SELVPN_OUTPUT -p tcp --dport 1443 -j ACCEPT",
+            "iptables -A SELVPN_OUTPUT -j DROP",
+            "iptables -I OUTPUT -j SELVPN_OUTPUT",
+        ]
+        for cmd in cmds:
+            subprocess.run(cmd, shell=True)
+
+    def disable(self):
+        cmds = [
+            "iptables -D OUTPUT -j SELVPN_OUTPUT",
+            "iptables -F SELVPN_OUTPUT",
+            "iptables -X SELVPN_OUTPUT",
+        ]
+        for cmd in cmds:
+            subprocess.run(cmd, shell=True)
+
+
+class OpenVpnUserScriptBase():
+    def run(self):
+        script_type = os.environ('script_type')
+        script_type_function_map = {
+            'up': self.up,
+            'predown': self.down,
+            'route-up': self.route_up,
+            'route-pre-down': self.route_pre_down,
+        }
+    def up(self): pass
+    def predown(self): pass
+    def route_up(self): pass
+    def route_pre_down(self): pass
+
+
+class OpenVpnUserScript():
+    def up(self):
+        KillSwitchUsingIptables().run()
+
+
+def run_as_user_script():
+    OpenVpnUserScript().run()
+
+def command_enable(args=None):
+    KillSwitchUsingIptables().enable()
+
+def command_disable(args=None):
+    KillSwitchUsingIptables().disable()
+
+
+def main(args=None):
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    parser_connect = subparsers.add_parser('connect')
+    parser_connect.add_argument("config", help="ovpn file name", default=None)
+    parser_connect.set_defaults(handler=command_connect)
+
+    parser_up = subparsers.add_parser('up')
+    parser_up.add_argument("config", help="ovpn file name", default=None)
+    parser_up.set_defaults(handler=command_connect)
+
+    parser_status = subparsers.add_parser('status')
+    parser_status.set_defaults(handler=command_status)
+
+    parser_disconnect = subparsers.add_parser('disconnect')
+    parser_disconnect.set_defaults(handler=command_disconnect)
+
+    parser_down = subparsers.add_parser('down')
+    parser_down.set_defaults(handler=command_disconnect)
+
+    parser_log = subparsers.add_parser('log')
+    parser_log.set_defaults(handler=command_log)
+
+    parser_enable_killswitch = subparsers.add_parser('enable')
+    parser_enable_killswitch.set_defaults(handler=command_enable)
+
+    parser_disable_killswitch = subparsers.add_parser('disable')
+    parser_disable_killswitch.set_defaults(handler=command_disable)
+
+    args = parser.parse_args(args)
+    if hasattr(args, 'handler'):
+        return args.handler(args)
+    else:
+        if os.environ.get('script_type') != None:
+            run_as_user_script()
+        else:
+            return command_connect_or_status(args)
+            # return parser.print_help()
+
+if __name__ == "__main__":
+    main()
