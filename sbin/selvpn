@@ -83,7 +83,7 @@ class OpenVpnProcess():
             "--writepid", pidfile,
             "--user", username,
             "--group", groupname,
-            "--data-ciphers", 'AES-256-GCM:AES^128-GCM:CHACHA20-POLY1305:AES-256-CBC',
+            "--data-ciphers", 'AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305:AES-256-CBC:AES-128-CBC',
             # "--down-pre",  # Run --down command before TUN/TAP close.
             # "--up-restart",  # Run up/down commands for all restarts including those caused by --ping-restart or SIGUSR1
             # "--script-security", "2",
