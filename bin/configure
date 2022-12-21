@@ -52,6 +52,9 @@ configure_debian() {
 configure_kali() {
   echo "Running configure_kali"
 
+  # autologin
+  sudo sed -i '/^\[Seat:\*]/a\autologin-user=user\nautologin-session=xfce' /etc/lightdm/lightdm.conf
+
 }
 
 configure_ubuntu() {
