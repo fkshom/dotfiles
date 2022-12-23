@@ -57,6 +57,7 @@ configure_kali() {
 
   sudo apt update
   sudo apt install -y peco  # for selvpn
+  sudo apt install -y seclists
 
   xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false
   xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0
