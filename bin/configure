@@ -62,6 +62,8 @@ configure_kali() {
   xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false
   xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0
   sudo apt purge -y light-locker
+
+  echo user ALL=NOPASSWD: ALL | sudo tee /etc/sudoers.d/user_nopasswd
 }
 
 configure_ubuntu() {
