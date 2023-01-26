@@ -33,7 +33,8 @@
     ~/.sh.d:
     ~/usr/sbin:
       path: sbin
-
+    ~/usr/share:
+      path: share
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
