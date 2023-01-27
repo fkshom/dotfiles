@@ -204,6 +204,12 @@ getmac() {
 getip() {
   ip a show dev $1 | grep "inet " | awk '{print $2}'
 } 
+aptupgrade() {
+  sudo sh -c "apt-get update && apt-get upgrade -y"
+}
+aptupgradereboot() {
+  sudo sh -c "apt-get update && apt-get upgrade -y && reboot"
+}
 
 ## environment variable
 ## ====================
