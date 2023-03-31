@@ -8,8 +8,7 @@
     ~/.vim:
     ~/.tmux.conf:
     ~/.tmux:
-    ~/.zplug:
-    ~/.zinit:
+#    ~/.zplug:
     ~/.zshrc:
     ~/.zsh.d:
     ~/.Xmodmap:
