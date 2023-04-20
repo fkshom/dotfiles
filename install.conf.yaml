@@ -10,6 +10,7 @@
     ~/.tmux:
 #    ~/.zplug:
     ~/.zshrc:
+    ~/.zshenv:
     ~/.zsh.d:
     ~/.Xmodmap:
     ~/.config/autostart/xmodmap.desktop:
