@@ -204,6 +204,9 @@ getmac() {
 getip() {
   ip a show dev $1 | grep "inet " | awk '{print $2}'
 } 
+aptupdate() {
+  sudo sh -c "apt-get update"
+}
 aptupgrade() {
   sudo sh -c "apt-get update && apt-get upgrade -y"
 }
