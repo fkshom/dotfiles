@@ -109,6 +109,10 @@ if type git > /dev/null 2>&1; then
   alias g='git'
   #[[ $_SHELL == 'bash' ]] && __git_complete g __git_main
   [[ $_SHELL == 'zsh' ]] && compdef g=git
+  alias gcmt='git commit'
+  alias gadd='git add'
+  alias gst='git st'
+  alias gwip='git add .; git commit -m wip; git push'
 fi
 
 if type docker-compose > /dev/null 2>&1; then
@@ -213,6 +217,10 @@ aptupgrade() {
 aptupgradereboot() {
   sudo sh -c "apt-get update && apt-get upgrade -y && reboot"
 }
+
+if type code > /dev/null 2>&1; then
+  alias code="code ."
+fi
 
 ## environment variable
 ## ====================
