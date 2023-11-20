@@ -53,7 +53,7 @@ configure_kali() {
   echo "Running configure_kali"
 
   # autologin
-  sudo sed -i '/^\[Seat:\*]/a\autologin-user=user\nautologin-session=xfce' /etc/lightdm/lightdm.conf
+  sudo sed -i '/^\[Seat:\*]/a\autologin-user='"$USER"'\nautologin-session=xfce' /etc/lightdm/lightdm.conf
 
   sudo apt update
   sudo apt install -y peco  # for selvpn
