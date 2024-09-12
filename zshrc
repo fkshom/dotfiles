@@ -26,7 +26,7 @@ autoload -Uz _zinit
 zinit light zdharma/fast-syntax-highlighting
 zinit light zsh-git-prompt/zsh-git-prompt
 zinit load zdharma/history-search-multi-word
-zinit load 39e/zsh-completions-anyenv
+#zinit load 39e/zsh-completions-anyenv
 zinit light mollifier/anyframe
 #zinit light b4b4r07/enhancd
 
