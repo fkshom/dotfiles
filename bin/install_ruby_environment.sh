@@ -3,7 +3,7 @@
 echo "Install rbenv"
 
 sudo apt update
-sudo apt install -y build-essential libreadline-dev zlib1g-dev libsqlite3-dev libbz2-dev libssl-dev
+sudo apt install -y build-essential libreadline-dev zlib1g-dev libsqlite3-dev libbz2-dev libssl-dev libyaml-dev
 
 if [ -d $HOME/.rbenv ]; then
   (cd $HOME/.rbenv; git pull)
